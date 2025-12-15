@@ -1,0 +1,24 @@
+services:
+  jekyll:
+    image: ruby:3.2
+    container_name: jekyll-chirpy-blog
+    working_dir: /app
+    command: >
+      bash -c "
+        gem install bundler &&
+        bundle install &&
+        bundle exec jekyll serve --host 0.0.0.0 --livereload --force_polling
+      "
+    ports:
+      - "4000:4000"
+      - "35729:35729"  # LiveReload port
+    volumes:
+      - .:/app
+      - bundle_cache:/usr/local/bundle
+    environment:
+      - JEKYLL_ENV=development
+    stdin_open: true
+    tty: true
+
+volumes:
+  bundle_cache:

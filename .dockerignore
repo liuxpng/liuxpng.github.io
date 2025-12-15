@@ -1,0 +1,33 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+.gitmodules
+
+# Build output
+_site
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+
+# Dependencies
+.bundle
+vendor
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
