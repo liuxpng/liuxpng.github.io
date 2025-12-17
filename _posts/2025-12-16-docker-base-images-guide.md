@@ -23,9 +23,7 @@ tags: [Docker, 容器, DevOps, 最佳实践]
 | 镜像 | 体积 | 一句话描述 |
 |------|------|-----------|
 | scratch | 0 MB | 空镜像，真正的从零开始 |
-| busybox | ~1-5 MB | 嵌入式 Linux 的瑞士军刀 |
 | alpine | ~5-7 MB | 最流行的轻量级 Linux 发行版 |
-| distroless | ~20-50 MB | Google 出品的安全精简镜像 |
 | debian/ubuntu | ~70-130 MB | 传统完整 Linux 发行版 |
 
 ---
@@ -80,50 +78,6 @@ ENTRYPOINT ["/myapp"]
    COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
    ```
 4. **没有 /tmp 目录**：某些程序可能需要临时目录
-
----
-
-## busybox：嵌入式瑞士军刀
-
-### 是什么
-
-BusyBox 将许多常用 Unix 工具的精简版本集成到一个小型可执行文件中，常用于嵌入式系统。Docker 的 busybox 镜像基于此构建。
-
-```dockerfile
-FROM busybox
-COPY myapp /myapp
-CMD ["/myapp"]
-```
-
-### 特点
-
-- 体积约 1-5 MB（取决于变体）
-- 包含常用 Unix 工具：sh、ls、cp、cat、grep、wget 等
-- 有多个变体：`busybox:glibc`、`busybox:musl`、`busybox:uclibc`
-- 没有包管理器
-
-### 适用场景
-
-- 需要基本 shell 能力但追求小体积
-- 简单的脚本任务
-- 调试用的 sidecar 容器
-- 作为 initContainer 执行初始化任务
-
-```dockerfile
-# 作为调试 sidecar 的示例
-FROM busybox
-CMD ["sh", "-c", "while true; do sleep 3600; done"]
-```
-
-### 常见坑点
-
-1. **工具功能受限**：busybox 的工具是精简版，不支持所有 GNU 选项
-   ```bash
-   # 例如 busybox 的 grep 不支持 -P (Perl 正则)
-   grep -P '\d+' file.txt  # 会报错
-   ```
-2. **没有包管理器**：无法安装额外的软件
-3. **C 库差异**：不同变体使用不同的 C 库，需要注意兼容性
 
 ---
 
@@ -189,71 +143,6 @@ CMD ["python", "app.py"]
        cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
        echo "Asia/Shanghai" > /etc/timezone
    ```
-
----
-
-## distroless：Google 的安全之选
-
-### 是什么
-
-Distroless 是 Google 推出的一系列精简镜像，只包含应用程序及其运行时依赖，不包含包管理器、shell 或其他常见 Linux 工具。
-
-```dockerfile
-FROM gcr.io/distroless/static-debian12
-COPY myapp /myapp
-ENTRYPOINT ["/myapp"]
-```
-
-### 特点
-
-- 体积约 20-50 MB（取决于变体）
-- 没有 shell、没有包管理器
-- 基于 Debian，使用 glibc
-- 提供多种运行时变体：static、base、java、python、nodejs 等
-- 提供 debug 变体用于调试（包含 busybox shell）
-
-### 可用变体
-
-| 变体 | 用途 | 体积 |
-|------|------|------|
-| `gcr.io/distroless/static` | 静态编译的程序 | ~2 MB |
-| `gcr.io/distroless/base` | 动态链接的程序 | ~20 MB |
-| `gcr.io/distroless/java` | Java 应用 | ~200 MB |
-| `gcr.io/distroless/python3` | Python 应用 | ~50 MB |
-| `gcr.io/distroless/nodejs` | Node.js 应用 | ~100 MB |
-
-### 适用场景
-
-- **安全敏感的生产环境**：减少攻击面
-- **合规要求高的场景**：更少的组件意味着更少的漏洞扫描告警
-- 已经在使用 glibc 的项目迁移
-
-```dockerfile
-# Java 应用使用 distroless 的示例
-FROM maven:3.9-eclipse-temurin-21 AS builder
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn package -DskipTests
-
-FROM gcr.io/distroless/java21-debian12
-COPY --from=builder /app/target/app.jar /app.jar
-ENTRYPOINT ["java", "-jar", "/app.jar"]
-```
-
-### 常见坑点
-
-1. **调试困难**：没有 shell，无法 exec 进入容器
-   - 解决方案：使用 debug 变体 `gcr.io/distroless/base:debug`
-   ```bash
-   # debug 变体包含 busybox shell
-   docker exec -it container /busybox/sh
-   ```
-
-2. **无法安装额外依赖**：镜像是只读的，没有包管理器
-   - 解决方案：在构建阶段准备好所有依赖
-
-3. **镜像拉取**：镜像托管在 gcr.io，国内访问可能需要代理
 
 ---
 
@@ -327,168 +216,17 @@ CMD ["python3", "/app/main.py"]
 
 ## 对比总结
 
-| 特性 | scratch | busybox | alpine | distroless | debian/ubuntu |
-|------|---------|---------|--------|------------|---------------|
-| 体积 | 0 MB | ~1-5 MB | ~5-7 MB | ~20-50 MB | ~70-130 MB |
-| 包管理器 | 无 | 无 | apk | 无 | apt |
-| Shell | 无 | sh | sh | 无* | bash/sh |
-| C 库 | 无 | 多种 | musl | glibc | glibc |
-| 调试便利性 | 差 | 中 | 好 | 差* | 好 |
-| 安全性 | 高 | 中 | 高 | 高 | 中 |
-| 兼容性 | 低 | 中 | 中 | 高 | 高 |
+| 特性 | scratch | alpine | debian/ubuntu |
+|------|---------|--------|---------------|
+| 体积 | 0 MB | ~5-7 MB | ~70-130 MB |
+| 包管理器 | 无 | apk | apt |
+| Shell | 无 | sh | bash/sh |
+| C 库 | 无 | musl | glibc |
+| 调试便利性 | 差 | 好 | 好 |
+| 安全性 | 高 | 高 | 中 |
+| 兼容性 | 低 | 中 | 高 |
 
-*distroless 的 debug 变体包含 shell
-
----
-
-## apk vs apt：包管理器使用差异
-
-如果你同时使用过 alpine 和 debian/ubuntu 镜像，可能会注意到一个有趣的区别：
-
-```dockerfile
-# Alpine：不需要 update
-RUN apk add --no-cache curl
-
-# Debian/Ubuntu：必须先 update
-RUN apt-get update && apt-get install -y curl
-```
-
-为什么 apk 不需要 `update`，而 apt 必须先 `update`？
-
-### 设计差异
-
-**apt 的工作方式**：
-- Debian/Ubuntu 镜像为了减小体积，**不包含软件包索引**
-- `/var/lib/apt/lists/` 目录是空的
-- 必须先运行 `apt-get update` 下载最新的软件包列表，才能知道有哪些包可以安装
-
-**apk 的工作方式**：
-- Alpine 镜像**内置了软件包索引**（存储在 `/var/cache/apk/` 或 `/lib/apk/db/`）
-- 索引文件很小（压缩后约 1-2 MB），包含在基础镜像中
-- 可以直接安装软件包，无需额外的 update 步骤
-
-### 为什么这样设计
-
-| 方面 | apt (Debian/Ubuntu) | apk (Alpine) |
-|------|---------------------|--------------|
-| 索引大小 | 较大（解压后 30+ MB） | 很小（1-2 MB） |
-| 设计目标 | 通用服务器，功能完整 | 容器/嵌入式，极致精简 |
-| 更新频率 | 仓库更新频繁 | 相对稳定 |
-| 基础镜像策略 | 不含索引，保持镜像小 | 包含索引，简化使用 |
-
-Alpine 的设计哲学是"开箱即用"，适合容器场景；Debian 的设计更传统，假设系统是长期运行的。
-
-### Dockerfile 最佳实践
-
-**Alpine (apk)**：
-
-```dockerfile
-# 推荐：使用 --no-cache 避免缓存索引文件
-RUN apk add --no-cache curl vim
-
-# 如果需要更新索引（比如刚发布的新包）
-RUN apk update && apk add --no-cache curl && rm -rf /var/cache/apk/*
-
-# 安装特定版本
-RUN apk add --no-cache curl=8.5.0-r0
-```
-
-**Debian/Ubuntu (apt)**：
-
-```dockerfile
-# 推荐：update + install + 清理在同一个 RUN 指令中
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    vim \
-    && rm -rf /var/lib/apt/lists/*
-
-# 错误示范：分开写会导致缓存问题
-RUN apt-get update          # 这一层会被缓存
-RUN apt-get install -y curl # 可能使用过期的索引
-```
-
-### 为什么 apt 要清理 /var/lib/apt/lists/*
-
-```dockerfile
-# 不清理的后果：增加约 30-40 MB 镜像体积
-RUN apt-get update && apt-get install -y curl
-# 镜像大小：~150 MB
-
-# 清理后
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-# 镜像大小：~110 MB
-```
-
-### 常见问题
-
-**Q: 为什么我的 apt install 报错 "Unable to locate package"？**
-
-A: 忘记运行 `apt-get update`，或者 update 在之前的镜像层中已被缓存但索引已过期。
-
-```dockerfile
-# 解决方案：确保 update 和 install 在同一个 RUN 指令中
-RUN apt-get update && apt-get install -y package-name
-```
-
-**Q: apk 需要 --no-cache 吗？**
-
-A: 强烈推荐。虽然 apk 默认可以直接安装，但 `--no-cache` 会避免下载和存储索引缓存，保持镜像精简。
-
-```dockerfile
-# 不使用 --no-cache：可能增加 1-2 MB
-RUN apk add curl
-
-# 使用 --no-cache：更干净
-RUN apk add --no-cache curl
-```
-
----
-
-## 最佳实践
-
-### 1. 根据项目需求选择
-
-```
-需要极致精简 + 静态编译语言 → scratch
-需要 shell + 极小体积 → busybox
-需要包管理 + 小体积（大多数场景） → alpine
-需要安全 + glibc 兼容 → distroless
-需要完整兼容性 + 复杂依赖 → debian/ubuntu slim
-```
-
-### 2. 使用多阶段构建
-
-无论选择哪个基础镜像，都建议使用多阶段构建来减小最终镜像体积：
-
-```dockerfile
-# 构建阶段：使用完整环境
-FROM golang:1.21 AS builder
-WORKDIR /app
-COPY . .
-RUN CGO_ENABLED=0 go build -o myapp .
-
-# 运行阶段：使用精简镜像
-FROM alpine:3.19
-RUN apk add --no-cache ca-certificates tzdata
-COPY --from=builder /app/myapp /myapp
-ENTRYPOINT ["/myapp"]
-```
-
-### 3. 定期更新基础镜像
-
-- 关注基础镜像的安全公告
-- 使用 CI/CD 自动化重建镜像
-- 使用镜像扫描工具（Trivy、Clair 等）检测漏洞
-
-### 4. 固定版本号
-
-```dockerfile
-# 推荐：固定具体版本
-FROM alpine:3.19.1
-
-# 不推荐：使用 latest
-FROM alpine:latest
-```
+> 关于 apk 和 apt 包管理器的使用差异，请参考 [Docker 中 apk 与 apt 的使用差异](/posts/docker-apk-vs-apt/)。
 
 ---
 
@@ -496,9 +234,8 @@ FROM alpine:latest
 
 没有放之四海而皆准的最佳基础镜像，选择取决于你的具体需求：
 
-- 追求**极致精简**：scratch 或 busybox
+- 追求**极致精简**：scratch
 - 追求**平衡**（体积 + 功能）：alpine（大多数场景的首选）
-- 追求**安全 + 兼容性**：distroless
 - 追求**完整功能 + 最大兼容**：debian/ubuntu slim
 
 建议从 alpine 开始尝试，遇到兼容性问题再考虑其他选项。在后续文章中，我们会深入探讨各个镜像的进阶使用技巧和性能对比。
