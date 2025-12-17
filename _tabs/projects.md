@@ -12,8 +12,24 @@ order: 3
 
 ---
 
+## Local Database Environment
+
+本地数据库开发环境，一键启动 MySQL + MongoDB + Redis + Elasticsearch。
+
+[![GitHub](https://img.shields.io/badge/GitHub-local--database--environment-blue?logo=github)](https://github.com/liuxpng/local-database-environment)
+
+---
+
 ## Local Message Queue Environment
 
 本地消息队列开发环境，一键启动 RabbitMQ + Kafka。
 
 [![GitHub](https://img.shields.io/badge/GitHub-local--message--queue--environment-blue?logo=github)](https://github.com/liuxpng/local-message-queue-environment)
+
+---
+
+## Local Deploy Environment
+
+轻量级代码托管平台，Gitea + PostgreSQL + Traefik 部署方案。
+
+[![GitHub](https://img.shields.io/badge/GitHub-local--deploy--environment-blue?logo=github)](https://github.com/liuxpng/local-deploy-environment)
