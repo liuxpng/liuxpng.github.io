@@ -257,3 +257,8 @@ Python 镜像选择要点：
 - 避免在 Alpine 中使用有 C 扩展的包
 - 使用 `--no-cache-dir` 减小镜像体积
 - 多阶段构建分离编译和运行环境
+
+---
+
+> 需要可直接使用的 Python Dockerfile 模板？查看 [Dockerfile-template](https://github.com/liuxpng/Dockerfile-template) 仓库的 `python-with-uv` 或 `python-with-pip` 目录。
+{: .prompt-tip }

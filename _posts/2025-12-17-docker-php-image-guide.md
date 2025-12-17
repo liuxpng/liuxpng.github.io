@@ -275,3 +275,8 @@ PHP 镜像选择要点：
 - 生产用 Alpine，开发用完整版
 - 使用多阶段构建分离 Composer 安装
 - 生产环境开启 opcache 并关闭 validate_timestamps
+
+---
+
+> 需要可直接使用的 PHP Dockerfile 模板？查看 [Dockerfile-template](https://github.com/liuxpng/Dockerfile-template) 仓库的 `php-fpm` 目录。
+{: .prompt-tip }

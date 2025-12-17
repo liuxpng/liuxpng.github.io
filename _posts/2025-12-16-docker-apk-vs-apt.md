@@ -114,3 +114,8 @@ RUN apk add --no-cache curl
 | 搜索包 | `apk search keyword` | `apt-cache search keyword` |
 | 查看已安装 | `apk info` | `dpkg -l` |
 | 清理缓存 | `rm -rf /var/cache/apk/*` | `rm -rf /var/lib/apt/lists/*` |
+
+---
+
+> 需要可直接使用的 Dockerfile 模板？查看 [Dockerfile-template](https://github.com/liuxpng/Dockerfile-template) 仓库，包含 Python、PHP、Go、Node.js 等常用环境的生产级模板。
+{: .prompt-tip }

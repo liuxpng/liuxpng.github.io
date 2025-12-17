@@ -238,4 +238,9 @@ CMD ["python3", "/app/main.py"]
 - 追求**平衡**（体积 + 功能）：alpine（大多数场景的首选）
 - 追求**完整功能 + 最大兼容**：debian/ubuntu slim
 
-建议从 alpine 开始尝试，遇到兼容性问题再考虑其他选项。在后续文章中，我们会深入探讨各个镜像的进阶使用技巧和性能对比。
+建议从 alpine 开始尝试，遇到兼容性问题再考虑其他选项。
+
+---
+
+> 需要可直接使用的 Dockerfile 模板？查看 [Dockerfile-template](https://github.com/liuxpng/Dockerfile-template) 仓库，包含 Python、PHP、Go、Node.js 等常用环境的生产级模板。
+{: .prompt-tip }
