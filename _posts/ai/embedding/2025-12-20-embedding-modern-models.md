@@ -1,7 +1,7 @@
 ---
 title: 现代 Embedding 模型：从 BERT 到 BGE
 date: 2025-12-20 12:00:00 +0800
-categories: [AI, 基础]
+categories: [AI, Embedding]
 tags: [Embedding, BERT, Sentence-BERT, BGE, 模型选型]
 ---
 

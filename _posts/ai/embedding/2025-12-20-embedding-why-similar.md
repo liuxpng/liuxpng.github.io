@@ -1,7 +1,7 @@
 ---
 title: 理解 Embedding：为什么相似文本向量距离近
 date: 2025-12-20 11:00:00 +0800
-categories: [AI, 基础]
+categories: [AI, Embedding]
 tags: [Embedding, Word2Vec, 分布假设, NLP]
 ---
 

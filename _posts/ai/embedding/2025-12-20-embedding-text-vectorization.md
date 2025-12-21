@@ -1,7 +1,7 @@
 ---
 title: 文本向量化入门：从词袋到 TF-IDF
 date: 2025-12-20 10:00:00 +0800
-categories: [AI, 基础]
+categories: [AI, Embedding]
 tags: [Embedding, TF-IDF, 向量化, NLP]
 ---
 
