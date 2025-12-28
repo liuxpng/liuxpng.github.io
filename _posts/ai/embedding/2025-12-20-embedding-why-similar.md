@@ -396,6 +396,11 @@ BERT：词 + 上下文 → 动态向量
 2. **本文**：理解 Embedding：为什么相似文本向量距离近
 3. [现代 Embedding 模型：从 BERT 到 BGE](/posts/embedding-modern-models/) - 模型选型
 
+**神经网络基础**（理解 Word2Vec 训练原理）：
+
+- [多层神经网络：深度学习的起点](/posts/neural-network-multilayer/) - Word2Vec 使用的网络结构
+- [神经网络如何学习：反向传播与梯度下降](/posts/neural-network-backpropagation/) - 训练向量的核心算法
+
 **经典论文**：
 
 - [Word2Vec 论文](https://arxiv.org/abs/1301.3781) - Efficient Estimation of Word Representations in Vector Space

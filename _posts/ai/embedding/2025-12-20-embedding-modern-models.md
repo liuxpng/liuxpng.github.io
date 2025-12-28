@@ -355,6 +355,11 @@ MTEB 评估模型在多种任务上的表现：
 2. [理解 Embedding：为什么相似文本向量距离近](/posts/embedding-why-similar/) - 密集向量原理
 3. **本文**：现代 Embedding 模型：从 BERT 到 BGE
 
+**神经网络基础**（理解 BERT 的 Transformer 架构）：
+
+- [Attention 与 Transformer：现代 NLP 的基石](/posts/neural-network-transformer/) - BERT 的架构基础
+- [神经网络系列完整目录](/posts/neural-network-perceptron/) - 从感知机到 Transformer
+
 **相关技术**：
 
 - [RAG 核心组件：Embedding 与向量数据库](/posts/rag-embedding-vector-database/) - RAG 中的 Embedding 应用
